@@ -1,0 +1,7 @@
+{
+    "name": "Spark-Websockets-Corrected",
+    "author": "Chad Berkley",
+    "license": "MIT",
+    "version": "0.0.1",
+    "description": "Spark Library CORRECTED to work with websockets"
+}
