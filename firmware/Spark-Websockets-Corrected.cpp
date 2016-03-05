@@ -70,7 +70,7 @@
 #include "spark_wiring_string.h"
 #include "application.h"
 
-#include "Spark-Websockets.h"
+#include "Spark-Websockets-Corrected.h"
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdlib.h>
