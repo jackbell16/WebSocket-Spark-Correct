@@ -149,9 +149,9 @@ void WebSocketClient::disconnect() {
 
 byte WebSocketClient::nextByte() {
 	#ifdef TRACE
-	Serial.print("nextbyte_offset = ");
+	//Serial.print"nextbyte_offset = ");
 	//Serial.println(_offset);
-	Serial.print("nextbyte_total = ");
+	//Serial.print"nextbyte_total = ");
 	//Serial.println(_total);
 	#endif
 
@@ -166,13 +166,13 @@ int WebSocketClient::nextBytes(uint8_t *buffer, size_t size) {
 	{
 		read = (size > (size_t) (_total-_offset)) ? _total-_offset : size;
 		#ifdef TRACE
-		Serial.print("Nextbytes reading, total: ");
+		//Serial.print"Nextbytes reading, total: ");
 		//Serial.println(_total);
-		Serial.print("offset: ");
+		//Serial.print"offset: ");
 		//Serial.println(_offset);
-		Serial.print("read size: ");
+		//Serial.print"read size: ");
 		//Serial.println(size);
-		Serial.print("real read size: ");
+		//Serial.print"real read size: ");
 		////Serial.println(strlen(&_buffer[_offset]));
 		#endif
 		#ifdef STEPBYSTEP
@@ -208,7 +208,7 @@ void WebSocketClient::monitor () {
 		//__disable_irq();
 		_num++;
 		#ifdef TRACE
-		Serial.print("+++NUM = ");
+		//Serial.print"+++NUM = ");
 		//Serial.println(_num);
 		#endif
 
@@ -217,7 +217,7 @@ void WebSocketClient::monitor () {
 		_total = _client.read(_buffer, _total);
 		_buffer[_total] = 0x0;
 		#ifdef TRACE
-		Serial.print("realtotal = ");
+		//Serial.print"realtotal = ");
 		//Serial.println(_total);
 		#endif
 		_offset = 0;
@@ -227,7 +227,7 @@ void WebSocketClient::monitor () {
 		#endif
 
 		#ifdef TRACE
-		//Serial.print("message = ");
+		////Serial.print"message = ");
 	//	//Serial.println((char*)_buffer);
 		#endif
 
@@ -239,14 +239,14 @@ void WebSocketClient::monitor () {
 		#endif
 		bool fin = hdr & 0x80;
 		#ifdef TRACE
-		 Serial.print("fin = ");
+		 //Serial.print"fin = ");
 		 //Serial.println(fin);
 		#endif
 
 		int opCode = hdr & 0x0F;
 
 		#ifdef TRACE
-		Serial.print("op = ");
+		//Serial.print"op = ");
 		//Serial.println(opCode);
 		#endif
 
@@ -268,11 +268,11 @@ void WebSocketClient::monitor () {
 			delay(100);
 		#endif
 		#ifdef TRACE
-		Serial.print("hdr = ");
+		//Serial.print"hdr = ");
 		//Serial.println(hdr);
-		Serial.print("len = ");
+		//Serial.print"len = ");
 		//Serial.println(len);
-		Serial.print("mask = ");
+		//Serial.print"mask = ");
 		//Serial.println(mask);
 		#endif
 
@@ -358,7 +358,7 @@ void WebSocketClient::monitor () {
 
 		}
 		#ifdef TRACE
-		Serial.print("packetlen = ");
+		//Serial.print"packetlen = ");
 		//Serial.println(_packetLength);
 		#endif
 		#ifdef STEPBYSTEP
@@ -369,7 +369,7 @@ void WebSocketClient::monitor () {
 			_packet = (char*) malloc(len + 1);
 
 			#ifdef TRACE
-			Serial.print("len5 = ");
+			//Serial.print"len5 = ");
 			//Serial.println(len);
 			#endif
 			#ifdef STEPBYSTEP
@@ -378,7 +378,7 @@ void WebSocketClient::monitor () {
 			nextBytes((uint8_t*)_packet, len);
 
 			#ifdef TRACE
-			Serial.print("packetlen3 = ");
+			//Serial.print"packetlen3 = ");
 			//Serial.println(_packetLength);
 			#endif
 			#ifdef STEPBYSTEP
@@ -393,11 +393,11 @@ void WebSocketClient::monitor () {
 			_packet = (char*) malloc(_packetLength + 1);
 
 			#ifdef TRACE
-			Serial.print("packetlen4 = ");
+			//Serial.print"packetlen4 = ");
 			//Serial.println(_packetLength);
 			#endif
 			#ifdef TRACE
-			Serial.print("len4 = ");
+			//Serial.print"len4 = ");
 			//Serial.println(len);
 			#endif
 			#ifdef STEPBYSTEP
@@ -409,7 +409,7 @@ void WebSocketClient::monitor () {
 			temp = NULL;
 		}
 		#ifdef TRACE
-		Serial.print("packetlen2 = ");
+		//Serial.print"packetlen2 = ");
 		//Serial.println(_packetLength);
 		#endif
 		#ifdef STEPBYSTEP
@@ -429,7 +429,7 @@ void WebSocketClient::monitor () {
 
       case 0x01:
 		#ifdef DEBUGGING
-			Serial.print("onMessage: data = ");
+			//Serial.print"onMessage: data = ");
 			//Serial.println(_packet);
 			////Serial.println();
 		#endif
@@ -453,7 +453,7 @@ void WebSocketClient::monitor () {
       case 0x09:
 
 		#ifdef DEBUGGING
-			Serial.print(".");
+			//Serial.print".");
 		#endif
 	    _client.write(0x8A);//_client.write(0x09);//0x0A; - pong
         _client.write(byte(0x00));
@@ -462,7 +462,7 @@ void WebSocketClient::monitor () {
       case 0x0A:
 
 		#ifdef DEBUGGING
-			Serial.print("onPong");
+			//Serial.print"onPong");
 		#endif
         break;
 
@@ -471,10 +471,10 @@ void WebSocketClient::monitor () {
         unsigned int code = ((byte)_packet[0] << 8) + (byte)_packet[1];
 
 		#ifdef DEBUGGING
-			Serial.print("onClose code=");
+			//Serial.print"onClose code=");
 			//Serial.println(code);
-			//Serial.print(" message = ");
-			//Serial.print(message);
+			////Serial.print" message = ");
+			////Serial.printmessage);
 		#endif
 
         if(_onClose != NULL) {
@@ -539,7 +539,7 @@ bool WebSocketClient::readHandshake() {
 	while(true) {
 		readLine(line);
 		#ifdef HANDSHAKE
-			  Serial.print("handshake rcvd line: ");
+			  //Serial.print"handshake rcvd line: ");
 			  //Serial.println(line);
 		#endif
 
@@ -619,7 +619,7 @@ bool WebSocketClient::send (char* message) {
   }
   _client.print(message);
 #ifdef TRACE
-  Serial.print("message sent:");
+  //Serial.print"message sent:");
   //Serial.println(message);
 #endif
   return true;
