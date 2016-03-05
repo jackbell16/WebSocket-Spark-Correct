@@ -79,7 +79,7 @@
 
 
 #define HANDSHAKE
-#define DEBUGGING 1
+//#define DEBUGGING
 #define TRACE
 //#define STEPBYSTEP
 
@@ -100,7 +100,7 @@ void WebSocketClient::reconnect() {
   bool result = false;
   bool isconnected = false;
 		#ifdef DEBUGGING
-			Serial.println("Connecting...");
+			//Serial.println("Connecting...");
 		#endif
 
 	int i, count;
@@ -119,14 +119,14 @@ void WebSocketClient::reconnect() {
 	if(isconnected)
 	{
 		#ifdef DEBUGGING
-			Serial.println("Connected, sending handshake.");
+			//Serial.println("Connected, sending handshake.");
 		#endif
 		sendHandshake(_hostname, _path, _protocol);
 		result = readHandshake();
 	}
   if(!result) {
 	#ifdef DEBUGGING
-		Serial.println("Connection Failed!");
+		//Serial.println("Connection Failed!");
 	#endif
     if(_onError != NULL) {
       _onError(*this, const_cast<char *>("Connection Failed!"));
@@ -150,9 +150,9 @@ void WebSocketClient::disconnect() {
 byte WebSocketClient::nextByte() {
 	#ifdef TRACE
 	Serial.print("nextbyte_offset = ");
-	Serial.println(_offset);
+	//Serial.println(_offset);
 	Serial.print("nextbyte_total = ");
-	Serial.println(_total);
+	//Serial.println(_total);
 	#endif
 
 	return (_offset < _total) ? _buffer[_offset++] : -1;
@@ -167,13 +167,13 @@ int WebSocketClient::nextBytes(uint8_t *buffer, size_t size) {
 		read = (size > (size_t) (_total-_offset)) ? _total-_offset : size;
 		#ifdef TRACE
 		Serial.print("Nextbytes reading, total: ");
-		Serial.println(_total);
+		//Serial.println(_total);
 		Serial.print("offset: ");
-		Serial.println(_offset);
+		//Serial.println(_offset);
 		Serial.print("read size: ");
-		Serial.println(size);
+		//Serial.println(size);
 		Serial.print("real read size: ");
-		//Serial.println(strlen(&_buffer[_offset]));
+		////Serial.println(strlen(&_buffer[_offset]));
 		#endif
 		#ifdef STEPBYSTEP
 			delay(100);
@@ -209,7 +209,7 @@ void WebSocketClient::monitor () {
 		_num++;
 		#ifdef TRACE
 		Serial.print("+++NUM = ");
-		Serial.println(_num);
+		//Serial.println(_num);
 		#endif
 
 		_total =  _client.available();
@@ -218,7 +218,7 @@ void WebSocketClient::monitor () {
 		_buffer[_total] = 0x0;
 		#ifdef TRACE
 		Serial.print("realtotal = ");
-		Serial.println(_total);
+		//Serial.println(_total);
 		#endif
 		_offset = 0;
 		//__enable_irq();
@@ -228,7 +228,7 @@ void WebSocketClient::monitor () {
 
 		#ifdef TRACE
 		//Serial.print("message = ");
-	//	Serial.println((char*)_buffer);
+	//	//Serial.println((char*)_buffer);
 		#endif
 
 
@@ -240,14 +240,14 @@ void WebSocketClient::monitor () {
 		bool fin = hdr & 0x80;
 		#ifdef TRACE
 		 Serial.print("fin = ");
-		 Serial.println(fin);
+		 //Serial.println(fin);
 		#endif
 
 		int opCode = hdr & 0x0F;
 
 		#ifdef TRACE
 		Serial.print("op = ");
-		Serial.println(opCode);
+		//Serial.println(opCode);
 		#endif
 
 		hdr = nextByte();
@@ -269,11 +269,11 @@ void WebSocketClient::monitor () {
 		#endif
 		#ifdef TRACE
 		Serial.print("hdr = ");
-		Serial.println(hdr);
+		//Serial.println(hdr);
 		Serial.print("len = ");
-		Serial.println(len);
+		//Serial.println(len);
 		Serial.print("mask = ");
-		Serial.println(mask);
+		//Serial.println(mask);
 		#endif
 
 		if(mask) { // skipping 4 bytes for now.
@@ -281,7 +281,7 @@ void WebSocketClient::monitor () {
 		  nextBytes(temp, 4);
 		  //free(temp);
 			#ifdef DEBUGGING
-			Serial.println("Masking not yet supported (RFC 6455 section 5.3)");
+			//Serial.println("Masking not yet supported (RFC 6455 section 5.3)");
 			#endif
 
 		//		  if(_onError != NULL) {
@@ -293,7 +293,7 @@ void WebSocketClient::monitor () {
 
 		if(!fin) {
 			#ifdef TRACE
-			Serial.println("not fin");
+			//Serial.println("not fin");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -302,7 +302,7 @@ void WebSocketClient::monitor () {
 			_packet = (char*) malloc(len);
 			nextBytes((uint8_t*)_packet, len);
 			#ifdef TRACE
-			Serial.println("not fin, packet null, created");
+			//Serial.println("not fin, packet null, created");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -312,7 +312,7 @@ void WebSocketClient::monitor () {
 		  } else {
 
 			#ifdef TRACE
-			Serial.println("not fin, packet copying, before");
+			//Serial.println("not fin, packet copying, before");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -322,14 +322,14 @@ void WebSocketClient::monitor () {
 			char *temp = _packet;
 			_packet = (char*)malloc(_packetLength);
 			#ifdef TRACE
-			Serial.println("not fin, packet copying, allocated");
+			//Serial.println("not fin, packet copying, allocated");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
 			#endif
 			memcpy(_packet, temp, copyLen);
 			#ifdef TRACE
-			Serial.println("not fin, packet copying, memcpy");
+			//Serial.println("not fin, packet copying, memcpy");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -339,14 +339,14 @@ void WebSocketClient::monitor () {
 			_total = _client.read(_buffer, _total);
 			_offset = 0;
 			#ifdef TRACE
-			Serial.println("reallocated buffer, copied, reading");
+			//Serial.println("reallocated buffer, copied, reading");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
 			#endif
 			nextBytes((uint8_t*)&_packet[copyLen], len);
 			#ifdef TRACE
-			Serial.println("not fin, packet copying, nextbytes");
+			//Serial.println("not fin, packet copying, nextbytes");
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -359,7 +359,7 @@ void WebSocketClient::monitor () {
 		}
 		#ifdef TRACE
 		Serial.print("packetlen = ");
-		Serial.println(_packetLength);
+		//Serial.println(_packetLength);
 		#endif
 		#ifdef STEPBYSTEP
 			delay(100);
@@ -370,7 +370,7 @@ void WebSocketClient::monitor () {
 
 			#ifdef TRACE
 			Serial.print("len5 = ");
-			Serial.println(len);
+			//Serial.println(len);
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -379,7 +379,7 @@ void WebSocketClient::monitor () {
 
 			#ifdef TRACE
 			Serial.print("packetlen3 = ");
-			Serial.println(_packetLength);
+			//Serial.println(_packetLength);
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -394,11 +394,11 @@ void WebSocketClient::monitor () {
 
 			#ifdef TRACE
 			Serial.print("packetlen4 = ");
-			Serial.println(_packetLength);
+			//Serial.println(_packetLength);
 			#endif
 			#ifdef TRACE
 			Serial.print("len4 = ");
-			Serial.println(len);
+			//Serial.println(len);
 			#endif
 			#ifdef STEPBYSTEP
 				delay(100);
@@ -410,7 +410,7 @@ void WebSocketClient::monitor () {
 		}
 		#ifdef TRACE
 		Serial.print("packetlen2 = ");
-		Serial.println(_packetLength);
+		//Serial.println(_packetLength);
 		#endif
 		#ifdef STEPBYSTEP
 			delay(100);
@@ -423,15 +423,15 @@ void WebSocketClient::monitor () {
     switch(opCode) {
       case 0x00:
 		#ifdef DEBUGGING
-			Serial.println("Unexpected Continuation OpCode");
+			//Serial.println("Unexpected Continuation OpCode");
 		#endif
         break;
 
       case 0x01:
 		#ifdef DEBUGGING
 			Serial.print("onMessage: data = ");
-			Serial.println(_packet);
-			//Serial.println();
+			//Serial.println(_packet);
+			////Serial.println();
 		#endif
 
         if (_onMessage != NULL ) {
@@ -442,7 +442,7 @@ void WebSocketClient::monitor () {
       case 0x02:
 
 		#ifdef DEBUGGING
-		Serial.println("Binary messages not yet supported (RFC 6455 section 5.6)");
+		//Serial.println("Binary messages not yet supported (RFC 6455 section 5.6)");
 		#endif
 
         if(_onError != NULL) {
@@ -472,7 +472,7 @@ void WebSocketClient::monitor () {
 
 		#ifdef DEBUGGING
 			Serial.print("onClose code=");
-			Serial.println(code);
+			//Serial.println(code);
 			//Serial.print(" message = ");
 			//Serial.print(message);
 		#endif
@@ -509,7 +509,7 @@ void WebSocketClient::onError(OnError fn) {
 
 
 void WebSocketClient::sendHandshake(const char* hostname, const char* path, const char* protocol) {
-  Serial.println("Sending handshake!");
+  //Serial.println("Sending handshake!");
 
 	WebSocketClientStringTable.replace("{0}", hostname);
 	String strport = String(_port);
@@ -517,14 +517,14 @@ void WebSocketClient::sendHandshake(const char* hostname, const char* path, cons
 
 	_client.print(WebSocketClientStringTable);
 	#ifdef HANDSHAKE
-	  Serial.println(WebSocketClientStringTable);
-	  Serial.println("Handshake sent");
+	  //Serial.println(WebSocketClientStringTable);
+	  //Serial.println("Handshake sent");
 	#endif
 }
 
 bool WebSocketClient::readHandshake() {
 	#ifdef HANDSHAKE
-		  Serial.println("Reading handshake!");
+		  //Serial.println("Reading handshake!");
 	#endif
 	bool result = false;
 	char line[128];
@@ -540,7 +540,7 @@ bool WebSocketClient::readHandshake() {
 		readLine(line);
 		#ifdef HANDSHAKE
 			  Serial.print("handshake rcvd line: ");
-			  Serial.println(line);
+			  //Serial.println(line);
 		#endif
 
 		if(strcmp(line, "") == 0) {
@@ -578,13 +578,13 @@ bool WebSocketClient::readHandshake() {
 
 	if(!result) {
 		#ifdef DEBUGGING
-			Serial.println("Handshake Failed! Terminating");
+			//Serial.println("Handshake Failed! Terminating");
 		#endif
 		_client.stop();
 	}
 	else
 	{
-		Serial.println("Handshake Ok!");
+		//Serial.println("Handshake Ok!");
 	}
 	return result;
 }
@@ -620,7 +620,7 @@ bool WebSocketClient::send (char* message) {
   _client.print(message);
 #ifdef TRACE
   Serial.print("message sent:");
-  Serial.println(message);
+  //Serial.println(message);
 #endif
   return true;
 }
