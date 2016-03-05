@@ -1,9 +1,9 @@
 /*
- WebsocketClient, a websocket client for Spark Core based on Arduino websocket client
+ WebsocketClient, a websocket client for Arduino
  Copyright 2011 Kevin Rohling
  Copyright 2012 Ian Moore
- Copyright 2014 Ivan Davletshin
-
+ http://kevinrohling.com
+ http://www.incamoon.com
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-
+#include "application.h"
 #ifndef WEBSOCKETCLIENT_H
 #define WEBSOCKETCLIENT_H
+
+#define byte uint8_t
 
 //#define HANDSHAKE // uncomment to print out the sent and received handshake messages
 //#define TRACE // uncomment to support TRACE level debugging of wire protocol
@@ -35,6 +37,8 @@
 
 #include <stdlib.h>
 #include "spark_wiring_tcpclient.h"
+#include "spark_wiring_string.h"
+//#include "Arduino.h"
 
 class WebSocketClient {
 public:
@@ -42,7 +46,8 @@ public:
   typedef void (*OnOpen)(WebSocketClient client);
   typedef void (*OnClose)(WebSocketClient client, int code, char* message);
   typedef void (*OnError)(WebSocketClient client, char* message);
-  void connect(const byte* server_ip, int port = 80, const char* protocol = NULL, const char* path = "/");
+  void connect(const char hostname[], int port = 80, const char protocol[] = NULL, const char path[] = "/");
+  void connect(const byte host[], int port = 80, const char protocol[] = NULL, const char path[] = "/");
   bool connected();
   void disconnect();
   void monitor();
@@ -52,23 +57,35 @@ public:
   void onError(OnError function);
   bool send(char* message);
 private:
-  // const char* _hostname;
-  const byte* _server_ip; //ip address
+String WebSocketClientStringTable = {
+			"GET /ExampleWebSocket/example HTTP/1.1\x0d\x0a"
+			"Upgrade: websocket\x0d\x0a"
+			"Connection: Upgrade\x0d\x0a"
+			"Host: {0}:{1}\x0d\x0a"
+			"Origin: SparkWebSocketClient\x0d\x0a"
+			"Sec-WebSocket-Key:  1VTFj/CydlBCZDucDqw8eA==\x0d\x0a"
+			"Sec-WebSocket-Version: 13\x0d\x0a"
+			"\x0d\x0a"};
+  const char* _hostname;
+  const byte* _host;
   int _port;
   const char* _path;
   const char* _protocol;
-  char _key[45];
   bool _canConnect;
   bool _reconnecting;
   unsigned long _retryTimeout;
   void reconnect();
-  void sendHandshake(const byte* server_ip, const char* path, const char* protocol);
+  void sendHandshake(const char* hostname, const char* path, const char* protocol);
+  virtual int nextBytes(uint8_t *buffer, size_t size);
   TCPClient _client;
   OnOpen _onOpen;
   OnClose _onClose;
   OnMessage _onMessage;
   OnError _onError;
   char* _packet;
+  uint8_t* _buffer;
+  uint16_t _offset;
+  uint16_t _total;
   unsigned int _packetLength;
   byte _opCode;
   bool readHandshake();
@@ -76,6 +93,8 @@ private:
   void generateHash(char* buffer, size_t bufferlen);
   size_t base64Encode(byte* src, size_t srclength, char* target, size_t targetsize);
   byte nextByte();
+  uint8_t _num;
+  
   
 };
 
